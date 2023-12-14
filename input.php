@@ -29,7 +29,9 @@
         </p>
     </div>
 
-    <button type="button" id="submit">集計結果</button>
+    <div id="result_box">
+        <button type="button" id="submit">集計結果</button>
+    </div>
 
     <!-- テーブル表示用 -->
     <div id="toggle">
