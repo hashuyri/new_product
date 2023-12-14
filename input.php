@@ -13,8 +13,14 @@
 <body>
     <div id="file_upload">
         <form action="input.php" method="POST" enctype="multipart/form-data">
-            <input type="file" name="fname">
-            <input type="submit" value="アップロード">
+            <label id="file_select_btn">
+                ファイルを選択
+                <input type="file" name="fname">
+            </label>
+            <label id="upload_btn">
+                アップロード
+                <input type="submit" value="アップロード">
+            </label>
         </form>
 
         <!-- アップロードコメント -->

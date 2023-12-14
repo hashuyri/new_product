@@ -5,6 +5,8 @@ if ($_FILES["fname"] !== NULL) {
     $tmpfile = $files["tmp_name"];
 }
 
+$comment = ""; // エラー対策で外だし
+
 // ファイルがアップロードされているか確認
 if (is_uploaded_file($tmpfile)) {
     $filename = "./data/input/" . $files["name"]; // フォルダの指定
@@ -14,15 +16,13 @@ if (is_uploaded_file($tmpfile)) {
     } else {
         $comment = "ファイルをアップロードできません。";
     }
-} else {
-    $comment = "ファイルが選択されていません。";
 }
 
 $getFilename = [];
 $str = "";
 $data = [];
-$debitArray = [];
-$creditArray = [];
+$debitArray = []; // エラー対策で外だし
+$creditArray = []; // エラー対策で外だし
 
 // ディレクトリに格納されてるファイル一覧を読み込む
 $dp = opendir("./data/input/");
