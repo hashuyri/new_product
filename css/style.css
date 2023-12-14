@@ -1,0 +1,41 @@
+/* フェードインさせたいがため */
+#toggle {
+    display: none;
+}
+
+/* tableを中央配置 */
+#output {
+    display: flex;
+    justify-content: center;
+}
+
+table {
+    margin-top: 5%;
+    width: 60%;
+    /* 各要素の隙間をなくす */
+    border-spacing: 0;
+    border: 1px black solid;
+}
+
+th,
+td {
+    padding: 1% 0;
+    width: 25%;
+    border: 1px black solid;
+}
+
+/* 勘定科目名を左寄せ */
+.leftJustified {
+    padding-left: 1%;
+    text-align: left;
+}
+
+/* 数値は右寄せ */
+.rightJustified {
+    padding-right: 1%;
+    text-align: end;
+}
+
+#submit {
+    display: none;
+}
