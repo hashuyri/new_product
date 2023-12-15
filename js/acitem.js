@@ -1083,6 +1083,16 @@ const plAccountItems = [
         cramount: 0
     },
     {
+        ssdClass: "変動費",
+        cfClass: "",
+        acClass: "販管費",
+        indicator: 1,
+        fsAccount: "消耗品費",
+        tbAccount: "消耗品費",
+        deamount: 0,
+        cramount: 0
+    },
+    {
         ssdClass: "固定費",
         cfClass: "",
         acClass: "販管費",
