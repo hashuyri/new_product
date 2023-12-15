@@ -89,20 +89,31 @@ td {
 }
 
 /* 勘定科目名を左寄せ */
-.leftJustified {
+.left_justified {
     padding-left: 1%;
     text-align: left;
 }
 
 /* 数値は右寄せ */
-.rightJustified {
+.right_justified {
     padding-right: 1%;
     text-align: end;
 }
 
+.tb_debit {
+    background-color: #c3effa;
+}
+
+.tb_credit {
+    background-color: #fae7d6;
+}
+
+.tb_horizontal_total {
+    background-color: #a2e7a2;
+}
+
 /* 集計結果ボタンを真ん中配置するため */
 #result_box {
-    margin-top: 5%;
     width: 100%;
     display: flex;
     justify-content: end;

@@ -1,74 +1,125 @@
+//文字列の類似度チェック（レーベンシュタイン距離）
+function levenshteinDistance(str1, str2) {
+    let cost,
+        distance = [];
+
+    for (let i = 0; i <= str1.length; i++) {
+        distance[i] = [i];
+    }
+    if (distance.length > 0) {
+        for (let j = 0; j <= str2.length; j++) {
+            distance[0][j] = j;
+        }
+        for (let i = 1; i <= str1.length; i++) {
+            for (let j = 1; j <= str2.length; j++) {
+                cost = str1.charCodeAt(i - 1) == str2.charCodeAt(j - 1) ? 0 : 1;
+                distance[i][j] = Math.min(distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + cost);
+            }
+        }
+        return distance[str1.length][str2.length];
+    }
+}
+console.log(levenshteinDistance("支払報酬料", "支払報酬")); // => 1
+console.log(levenshteinDistance("支払報酬料", "支払報酬料")); // => 0
+console.log(levenshteinDistance("支払報酬料", "役員報酬")); // => 3
+console.log(levenshteinDistance("支払報酬料", "受取報酬料")); // => 2
+console.log(levenshteinDistance("支払報酬料", "減価償却費")); // => 5
+
+const fsAccountArray = [];
+const tbAccountArray = [];
+
+// 勘定科目名だけを集めた配列を作成
+bsAccountItems.forEach(element => {
+    fsAccountArray.push(element.fsAccount);
+    tbAccountArray.push(element.tbAccount);
+});
+plAccountItems.forEach(element => {
+    fsAccountArray.push(element.fsAccount);
+    tbAccountArray.push(element.tbAccount);
+});
+
+// 借方用
+function debitMoveNumber(actualArray, accontent) {
+    // 決算書表示名との一致を確認
+    if (Object.keys(actualArray).includes(accontent.fsAccount)) {
+        // 用意した勘定科目一覧に数値を代入する
+        accontent.deamount = actualArray[accontent.fsAccount];
+        // オブジェクト配列に格納したら重複しないよう削除
+        delete actualArray[accontent.fsAccount];
+
+        // 勘定科目名との一致を確認
+    } else if (Object.keys(actualArray).includes(accontent.tbAccount)) {
+        accontent.deamount = actualArray[accontent.tbAccount];
+        delete actualArray[accontent.tbAccount];
+    } else {
+        Object.keys(actualArray).forEach(elementItem => {
+            // 文字列が類似しておりかつ標準の勘定科目名に含まれていない場合、類似の勘定科目として登録する
+            if ((levenshteinDistance(accontent.fsAccount, elementItem) < 2 ||
+                levenshteinDistance(accontent.tbAccount, elementItem) < 2) &&
+                (fsAccountArray.indexOf(elementItem) === -1 &&
+                    tbAccountArray.indexOf(elementItem) === -1)) {
+                console.log(accontent.fsAccount, elementItem, actualArray[elementItem]);
+                accontent.deamount = actualArray[elementItem]; // 「.」形式ではエラーとなる
+                delete actualArray[elementItem];
+            }
+        });
+    }
+}
+
+// 貸方用
+function creditMoveNumber(actualArray, accontent) {
+    // 決算書表示名との一致を確認
+    if (Object.keys(actualArray).includes(accontent.fsAccount)) {
+        // 用意した勘定科目一覧に数値を代入する
+        accontent.cramount = actualArray[accontent.fsAccount];
+        // オブジェクト配列に格納したら重複しないよう削除
+        delete actualArray[accontent.fsAccount];
+
+        // 勘定科目名との一致を確認
+    } else if (Object.keys(actualArray).includes(accontent.tbAccount)) {
+        accontent.cramount = actualArray[accontent.tbAccount];
+        delete actualArray[accontent.tbAccount];
+    } else {
+        Object.keys(actualArray).forEach(elementItem => {
+            // 文字列が類似しておりかつ標準の勘定科目名に含まれていない場合、類似の勘定科目として登録する
+            if ((levenshteinDistance(accontent.fsAccount, elementItem) < 2 ||
+                levenshteinDistance(accontent.tbAccount, elementItem) < 2) &&
+                (fsAccountArray.indexOf(elementItem) === -1 &&
+                    tbAccountArray.indexOf(elementItem) === -1)) {
+                console.log(accontent.fsAccount, elementItem, actualArray[elementItem]);
+                accontent.cramount = actualArray[elementItem]; // 「.」形式ではエラーとなる
+                delete actualArray[elementItem];
+            }
+        });
+    }
+}
+
+console.log(debitArray, creditArray)
+
 // BS初期値に集計数値を代入
 bsAccountItems.forEach(element => {
-    // 借方修正配列
-    // 決算書表示名との一致を確認
-    if (Object.keys(debitArray).includes(element.fsAccount)) {
-        element.deamount = debitArray[element.fsAccount];
-        // オブジェクト配列に格納したら重複しないよう削除
-        delete debitArray[element.fsAccount];
-
-        // 勘定科目名との一致を確認
-    } else if (Object.keys(debitArray).includes(element.tbAccount)) {
-        element.deamount = debitArray[element.tbAccount];
-
-    } else {
-        console.log(element.fsAccount + "はない")
-    }
-
-    // 貸方集計配列
-    // 決算書表示名との一致を確認
-    if (Object.keys(creditArray).includes(element.fsAccount)) {
-        element.cramount = creditArray[element.fsAccount];
-        // オブジェクト配列に格納したら重複しないよう削除
-        delete creditArray[element.fsAccount];
-
-        // 勘定科目名との一致を確認
-    } else if (Object.keys(creditArray).includes(element.tbAccount)) {
-        element.cramount = creditArray[element.tbAccount];
-
-    } else {
-        console.log(element.fsAccount + "はないnai")
-    }
+    debitMoveNumber(debitArray, element);
+    creditMoveNumber(creditArray, element);
 });
 
 // PL初期値に集計数値を代入
 plAccountItems.forEach(element => {
-    // 借方修正配列
-    // 決算書表示名との一致を確認
-    if (Object.keys(debitArray).includes(element.fsAccount)) {
-        element.deamount = debitArray[element.fsAccount];
-        // オブジェクト配列に格納したら重複しないよう削除
-        delete debitArray[element.fsAccount];
-
-        // 勘定科目名との一致を確認
-    } else if (Object.keys(debitArray).includes(element.tbAccount)) {
-        element.deamount = debitArray[element.tbAccount];
-    }
-
-    // 貸方集計配列
-    // 決算書表示名との一致を確認
-    if (Object.keys(creditArray).includes(element.fsAccount)) {
-        element.cramount = creditArray[element.fsAccount];
-        // オブジェクト配列に格納したら重複しないよう削除
-        delete creditArray[element.fsAccount];
-
-        // 勘定科目名との一致を確認
-    } else if (Object.keys(creditArray).includes(element.tbAccount)) {
-        element.cramount = creditArray[element.tbAccount];
-    }
+    debitMoveNumber(debitArray, element);
+    creditMoveNumber(creditArray, element);
 });
+console.log(debitArray, creditArray) // 全ての勘定科目の数字を移すことができたか確認
 
 // 数値表示用
-const disclosureArray = ["<tr><th>決算書表示名</th><th>借方金額</th><th>貸方金額</th><th>合計額</th></tr>"];
+const disclosureArray = [`<tr><th>決算書表示名</th><th class="tb_debit">借方金額</th><th class="tb_credit">貸方金額</th><th class="tb_horizontal_total">合計額</th></tr>`];
 
 // BSを作る
 bsAccountItems.forEach(element => {
     if (element.deamount != 0 || element.cramount != 0) {
         disclosureArray.push(`<tr>
-            <th class="leftJustified">${element.fsAccount}</th>
-            <td class="rightJustified">${element.deamount.toLocaleString()}</td>
-            <td class="rightJustified">${element.cramount.toLocaleString()}</td>
-            <td class="rightJustified">${((element.deamount - element.cramount) * element.indicator).toLocaleString()}</td>
+            <th class="left_justified">${element.fsAccount}</th>
+            <td class="right_justified tb_debit">${element.deamount.toLocaleString()}</td> // コンマを付ける
+            <td class="right_justified tb_credit">${element.cramount.toLocaleString()}</td>
+            <td class="right_justified tb_horizontal_total">${((element.deamount - element.cramount) * element.indicator).toLocaleString()}</td>
             </tr>
         }`);
     }
@@ -78,15 +129,14 @@ bsAccountItems.forEach(element => {
 plAccountItems.forEach(element => {
     if (element.deamount != 0 || element.cramount != 0) {
         disclosureArray.push(`<tr>
-            <th class="leftJustified">${element.fsAccount}</th>
-            <td class="rightJustified">${element.deamount.toLocaleString()}</td>
-            <td class="rightJustified">${element.cramount.toLocaleString()}</td>
-            <td class="rightJustified">${((element.deamount - element.cramount) * element.indicator).toLocaleString()}</td>
+            <th class="left_justified">${element.fsAccount}</th>
+            <td class="right_justified tb_debit">${element.deamount.toLocaleString()}</td>
+            <td class="right_justified tb_credit">${element.cramount.toLocaleString()}</td>
+            <td class="right_justified tb_horizontal_total">${((element.deamount - element.cramount) * element.indicator).toLocaleString()}</td>
             </tr>
         }`);
     }
 });
-console.log(disclosureArray.length);
 
 if (disclosureArray.length > 1) {
     $("#submit").show();
