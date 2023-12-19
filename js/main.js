@@ -93,8 +93,43 @@ function creditMoveNumber(actualArray, accontent) {
         });
     }
 }
-
 console.log(debitArray, creditArray)
+
+// モーダル
+$(function () {
+    //開くボタンをクリックしたらモーダルを表示する
+    $(".modal-open").on('click', function () {
+        $(".modal-container").addClass("active");
+        return false;
+    });
+
+    //閉じるボタンをクリックしたらモーダルを閉じる
+    $(".modal-close").on("click", function () {
+        $(".modal-container").removeClass("active");
+    });
+
+    //モーダルの外側をクリックしたらモーダルを閉じる
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest(".modal-body").length) {
+            $(".modal-container").removeClass("active");
+        }
+    });
+});
+
+// ファイル名を検索
+// 中身が変更された際実行
+$("#file_select").change(function () {
+    const file_name = $(this).prop("files")[0].name;
+    $("#file_name_output").show();
+    $("#file_name").text(file_name);
+});
+
+// アップロードファイル未選択時のアラート
+$("#upload_btn").on("click", function () {
+    if (!$("#file_select").files) {
+        alert("ファイルを選択してください！");
+    }
+});
 
 // BS初期値に集計数値を代入
 bsAccountItems.forEach(element => {
@@ -147,7 +182,6 @@ if (disclosureArray.length > 1) {
 
 // ボタンを押したときにその他の記載を隠して試算表を表示
 $("#submit").on("click", function () {
-    $("#file_upload").hide();
     $("#toggle").fadeToggle();
 });
 
