@@ -1,18 +1,24 @@
 <?php
 
-if ($_FILES["fname"] !== NULL) {
+if (isset($_FILES["fname"])) {
     $files = $_FILES["fname"];
     $tmpfile = $files["tmp_name"];
+} else {
+    $tmpfile = "";
 }
 
+$directory = "./data/input/";
 $comment = ""; // エラー対策で外だし
 
 // ファイルがアップロードされているか確認
 if (is_uploaded_file($tmpfile)) {
-    $filename = "./data/input/" . $files["name"]; // フォルダの指定
+    echo "<pre>";
+    var_dump($files);
+    echo "<pre>";
+    $filename = $directory . $files["name"]; // フォルダの指定
     // アップロードされていれば、ファイルを指定のフォルダに格納する
     if (move_uploaded_file($tmpfile, $filename)) {
-        $comment = $filename . "をアップロードしました！";
+        $comment = $files["name"] . "を" . $directory . "にアップロードしました！";
     } else {
         $comment = "ファイルをアップロードできません。";
     }
@@ -25,7 +31,7 @@ $debitArray = []; // エラー対策で外だし
 $creditArray = []; // エラー対策で外だし
 
 // ディレクトリに格納されてるファイル一覧を読み込む
-$dp = opendir("./data/input/");
+$dp = opendir($directory);
 
 // ディレクトリ内のファイル名を読み込む
 while (($item = readdir($dp))) {
@@ -40,7 +46,7 @@ while (($item = readdir($dp))) {
 
 // $getFilenameに要素が一つでも入っていたら
 if (count($getFilename) > 0) {
-    $filename = "./data/input/" . $getFilename[0];
+    $filename = $directory . $getFilename[0];
     $file = fopen($filename, "r");
     flock($file, LOCK_EX);
 
@@ -101,7 +107,7 @@ if (count($getFilename) > 0) {
     // var_dump($debitArray);
     // var_dump($creditArray);
     // echo "<pre>";
-    
+
     flock($file, LOCK_UN);
     fclose($file);
 }

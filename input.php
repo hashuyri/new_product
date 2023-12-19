@@ -11,23 +11,39 @@
 </head>
 
 <body>
-    <div id="file_upload">
-        <form action="input.php" method="POST" enctype="multipart/form-data">
-            <label id="file_select_btn">
-                ファイルを選択
-                <input type="file" name="fname">
-            </label>
-            <label id="upload_btn">
-                アップロード
-                <input type="submit" value="アップロード">
-            </label>
-        </form>
-
-        <!-- アップロードコメント -->
-        <p>
-            <?= $comment ?>
-        </p>
+    <div id="modal_open_outbox">
+        <p class="modal-open">資料のアップロードはこちら</p>
     </div>
+
+    <div class="modal-container">
+        <div class="modal-body">
+            <div class="modal-close">×</div>
+            <div class="modal-content">
+                <div id="file_upload">
+                    <div id="file_name_output">
+                        「<span id="file_name"></span>」
+                        <p>を選択中</p>
+                    </div>
+                    <form action="input.php" method="POST" enctype="multipart/form-data">
+                        <label id="file_select_btn">
+                            ファイルを選択
+                            <input type="file" id="file_select" name="fname">
+                        </label>
+                        <label id="upload_btn">
+                            実行
+                            <input type="submit" value="upload">
+                        </label>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- アップロードコメント -->
+    <p>
+        <?= $comment ?>
+    </p>
+
 
     <div id="result_box">
         <button type="button" id="submit">集計結果</button>
