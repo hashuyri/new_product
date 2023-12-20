@@ -59,21 +59,55 @@ if (count($getFilename) > 0) {
         // var_dump($header);
         // echo "<pre>";
 
+        // DB各種項目設定
+        $dbname = "gs_dev14_06";
+        $user = "root";
+        $pwd = "";
+        $option = "charset=utf8";
+        $dbn = "mysql:host=localhost;dbname=" . $dbname . ";" . $option . ";" . "port=3306";
+
+        // DB接続
+        try {
+            $pdo = new PDO($dbn, $user, $pwd);
+        } catch (PDOException $e) {
+            echo json_encode(["db error" => "{$e->getMessage()}"]);
+            exit();
+        }
+
+        // テーブルの作成
+        $pdo->query("create table if not exists journalEntry_table ($header[0] INT(11), $header[1] DATE, $header[2] VARCHAR(128), $header[3] VARCHAR(128), $header[4] INT(20), $header[5] VARCHAR(128), $header[6] VARCHAR(128), $header[7] VARCHAR(128), $header[8] INT(20), $header[9] VARCHAR(128), $header[10] VARCHAR(128), created_at DATETIME, updated_at DATETIME)");
+
         // ファイルの終端に達するまで行ごとに処理
         while ($row = fgetcsv($file)) {
             // 各フィールドの文字エンコーディングをUTF-8に変換
             foreach ($row as $key => $value) {
                 $row[$key] = mb_convert_encoding($value, "UTF-8", "SJIS-win");
             }
-
             $data[] = array_combine($header, $row); // カラム名とデータを関連付けて格納
+            
+            // DBのテーブルにデータの書き込み
+            $entryDate = new DateTime($row[1]);
+            $entryDate = $entryDate->format("Y-m-d");
+            $sql = "INSERT INTO journalEntry_table ($header[0], $header[1], $header[2], $header[3], $header[4], $header[5], $header[6], $header[7], $header[8], $header[9], $header[10], created_at, updated_at) VALUES ($row[0], $entryDate, $row[2], $row[3], $row[4], $row[5], $row[6], $row[7], $row[8], $row[9], $row[10], now(), now())";
+            $stmt = $pdo->prepare($sql);
+            echo "<pre>";
+            var_dump($stmt);
+            echo "<pre>";
+
+            // SQL実行（実行に失敗すると `sql error ...` が出力される）
+            try {
+                $stmt->execute();
+            } catch (PDOException $e) {
+                echo json_encode(["sql error" => "{$e->getMessage()}"]);
+                exit();
+            }
         }
     }
 
     // 仕訳帳から科目を取り出す
     foreach ($data as $value) {
-        $tentativeDebitArray[] = $value["借方決算書表示名"];
-        $tentativeCreditArray[] = $value["貸方決算書表示名"];
+        $tentativeDebitArray[] = $value[$header[3]];
+        $tentativeCreditArray[] = $value[$header[7]];
     }
 
     $debitArray = array_unique($tentativeDebitArray); // 重複している借方科目の削除
