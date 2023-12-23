@@ -126,7 +126,7 @@ $("#file_select").change(function () {
 
 // アップロードファイル未選択時のアラート
 $("#upload_btn").on("click", function () {
-    if (!$("#file_select").files) {
+    if ($("#file_select").prop("files").length === 0) {
         alert("ファイルを選択してください！");
     }
 });
