@@ -1,4 +1,5 @@
 <?php
+include("functions.php");
 
 if (isset($_FILES["fname"])) {
     $files = $_FILES["fname"];
@@ -39,7 +40,7 @@ while (($item = readdir($dp))) {
         continue;
     }
     // key：ファイル名、value：更新時間
-    $getFileinfo[$item] = filemtime($directory.$item);
+    $getFileinfo[$item] = filemtime($directory . $item);
 }
 
 closedir($dp);
@@ -64,24 +65,18 @@ if (count($getFileinfo) > 0) {
         // var_dump($header);
         // echo "<pre>";
 
-        // DB各種項目設定
-        $dbname = "gs_dev14_06";
-        $user = "root";
-        $pwd = "";
-        $option = "charset=utf8";
-        $dbn = "mysql:host=localhost;dbname=" . $dbname . ";" . $option . ";" . "port=3306";
-
         // DB接続
-        try {
-            $pdo = new PDO($dbn, $user, $pwd);
-        } catch (PDOException $e) {
-            echo json_encode(["db error" => "{$e->getMessage()}"]);
-            exit();
-        }
+        $pdo = connect_to_db();
 
         // テーブルの作成
         $tableName = "journalEntry_table";
-        $pdo->query("create table if not exists $tableName ($header[0] INT(11), $header[1] DATE, $header[2] VARCHAR(128), $header[3] VARCHAR(128), $header[4] INT(20), $header[5] VARCHAR(128), $header[6] VARCHAR(128), $header[7] VARCHAR(128), $header[8] INT(20), $header[9] VARCHAR(128), $header[10] VARCHAR(128), created_at DATETIME, updated_at DATETIME)");
+        $pdo->query("create table if not exists $tableName
+                    ($header[0] INT(11), $header[1] DATE, $header[2] VARCHAR(128),
+                    $header[3] VARCHAR(128), $header[4] INT(20), $header[5] VARCHAR(128),
+                    $header[6] VARCHAR(128), $header[7] VARCHAR(128), $header[8] INT(20),
+                    $header[9] VARCHAR(128), $header[10] VARCHAR(128), created_at DATETIME,
+                    updated_at DATETIME)
+        ");
 
         // DBを空にする
         if (isset($_FILES["fname"])) {
@@ -100,7 +95,15 @@ if (count($getFileinfo) > 0) {
             if (isset($_FILES["fname"])) {
                 $entryDate = new DateTime($row[1]);
                 $entryDate = $entryDate->format("Y-m-d");
-                $sql = "INSERT INTO $tableName ($header[0], $header[1], $header[2], $header[3], $header[4], $header[5], $header[6], $header[7], $header[8], $header[9], $header[10], created_at, updated_at) VALUES ('$row[0]', '$entryDate', '$row[2]', '$row[3]', '$row[4]', '$row[5]', '$row[6]',' $row[7]', '$row[8]', '$row[9]', '$row[10]', now(), now())";
+                $sql = "INSERT INTO $tableName
+                        ($header[0], $header[1], $header[2], $header[3], $header[4],
+                        $header[5], $header[6], $header[7], $header[8], $header[9],
+                        $header[10], created_at, updated_at)
+                        VALUES
+                        ('$row[0]', '$entryDate', '$row[2]', '$row[3]', '$row[4]',
+                        '$row[5]', '$row[6]',' $row[7]', '$row[8]', '$row[9]',
+                        '$row[10]', now(), now()
+                )";
                 $stmt = $pdo->prepare($sql);
                 // echo "<pre>";
                 // var_dump($stmt);
@@ -116,9 +119,21 @@ if (count($getFileinfo) > 0) {
             }
         }
     }
-    
+
     // MySQLの情報をsumifする
-    // $sql = "SELECT $header[3], SUM($header[4]) FROM $tableName GROUP BY $header[3]";
+    // $sql = "SELECT $header[3], SUM($header[4]) as total_sum FROM $tableName GROUP BY $header[3]";
+    // $stmt = $pdo->prepare($sql);
+    // try {
+    //     $stmt->execute();
+    // } catch (PDOException $e) {
+    //     echo json_encode(["sql error" => "{$e->getMessage()}"]);
+    //     exit();
+    // }
+    // $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // echo "<pre>";
+    // var_dump($row);
+    // echo "<pre>";
+    // $total_sum = $row["total_sum"];
 
     // 仕訳帳から科目を取り出す
     foreach ($data as $value) {
