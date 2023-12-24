@@ -2,11 +2,11 @@
 function connect_to_db()
 {
     // DB接続
-    $dbname = "gs_dev14_06";
+    $db_name = "gs_dev14_06";
     $user = "root";
     $pwd = "";
     $option = "charset=utf8";
-    $dbn = "mysql:host=localhost;dbname=" . $dbname . ";" . $option . ";" . "port=3306";
+    $dbn = "mysql:host=localhost;dbname=" . $db_name . ";" . $option . ";" . "port=3306";
 
     // DB接続
     try {
@@ -16,5 +16,8 @@ function connect_to_db()
         exit();
     }
 }
+
+// グローバル変数
+$master_table = "master_data_table";
 
 ?>

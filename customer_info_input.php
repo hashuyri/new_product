@@ -4,9 +4,9 @@
 // echo "<pre>";
 
 // 法人番号が登録されている場合
-$errorComment = "";
+$error_comment = "";
 if (count($_GET) > 0) {
-  $errorComment = $_GET["business_id"] . "は既に登録されています。";
+  $error_comment = $_GET["business_id"] . "は既に登録されています。";
 }
 ?>
 
@@ -21,9 +21,9 @@ if (count($_GET) > 0) {
 
 <body>
   <p>
-    <?= $errorComment ?>
+    <?= $error_comment ?>
   </p>
-  <form action="data_input.php" method="POST" enctype="multipart/form-data">
+  <form action="customer_main_page.php" method="POST" enctype="multipart/form-data">
     <fieldset>
       <legend>事業者情報（入力画面）</legend>
       <a href="info_read.php">登録情報一覧</a>
