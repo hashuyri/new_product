@@ -85,7 +85,7 @@ function creditMoveNumber(actualArray, accountContent) {
             if ((levenshteinDistance(accountContent.fs_account, element) < 2 ||
                 levenshteinDistance(accountContent.tb_account, element) < 2) &&
                 (fs_account_array.indexOf(element) === -1 &&
-                    tb_account_array.indexOf(element) === -1)) {
+                tb_account_array.indexOf(element) === -1)) {
                 console.log(accountContent.fs_account, element, actualArray[element]);
                 accountContent.credit_amount = actualArray[element]; // 「.」形式ではエラーとなる
                 delete actualArray[element];

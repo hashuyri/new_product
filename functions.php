@@ -1,7 +1,6 @@
 <?php
-function connect_to_db()
+function connectToDB()
 {
-    // DB接続
     $db_name = "gs_dev14_06";
     $user = "root";
     $pwd = "";
@@ -13,6 +12,16 @@ function connect_to_db()
         return new PDO($dbn, $user, $pwd);
     } catch (PDOException $e) {
         echo json_encode(["db error" => "{$e->getMessage()}"]);
+        exit();
+    }
+}
+
+// MySQLへの指示を実行（実行に失敗すると `sql error ...` が出力される）
+function tryQuery($stmt) {
+    try {
+        $stmt->execute();
+    } catch (PDOException $e) {
+        echo json_encode(["sql error" => "{$e->getMessage()}"]);
         exit();
     }
 }

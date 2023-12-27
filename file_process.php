@@ -76,7 +76,7 @@ if (count($get_file_info) > 0) {
         // echo "<pre>";
 
         // DB接続
-        $pdo = connect_to_db();
+        $pdo = connectToDB();
 
         // テーブルの作成
         $table_name = "T" . $customer_id;
@@ -121,30 +121,36 @@ if (count($get_file_info) > 0) {
                 // echo "<pre>";
 
                 // SQL実行（実行に失敗すると `sql error ...` が出力される）
-                try {
-                    $stmt->execute();
-                } catch (PDOException $e) {
-                    echo json_encode(["sql error" => "{$e->getMessage()}"]);
-                    exit();
-                }
+                tryQuery($stmt);
             }
         }
     }
 
-    // MySQLの情報をsumifする
-    // $sql = "SELECT $header[3], SUM($header[4]) as total_sum FROM $table_name GROUP BY $header[3]";
-    // $stmt = $pdo->prepare($sql);
-    // try {
-    //     $stmt->execute();
-    // } catch (PDOException $e) {
-    //     echo json_encode(["sql error" => "{$e->getMessage()}"]);
-    //     exit();
-    // }
-    // $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+
+    // MySQLの借方情報をsumifする
+    $sql = "SELECT `借方決算書表示名` as debit_item, SUM(`借方金額`) as total_sum FROM $table_name GROUP BY `借方決算書表示名`";
+    $stmt = $pdo->prepare($sql);
+    tryQuery($stmt);
+    $debit_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //削除実行
+    array_splice($debit_array, 0, 1);
     // echo "<pre>";
-    // var_dump($row);
+    // var_dump($debit_array);
     // echo "<pre>";
-    // $total_sum = $row["total_sum"];
+
+    // MySQLの貸方情報をsumifする
+    $sql = "SELECT `貸方決算書表示名` as credit_item, SUM(`貸方金額`) as total_sum FROM $table_name GROUP BY `貸方決算書表示名`";
+    $stmt = $pdo->prepare($sql);
+    tryQuery($stmt);
+    $credit_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //削除実行
+    array_splice($credit_array, 0, 1);
+    // echo "<pre>";
+    // var_dump($credit_array);
+    // echo "<pre>";
+
+
 
     // 仕訳帳から科目を取り出す
     foreach ($data as $value) {
@@ -162,11 +168,6 @@ if (count($get_file_info) > 0) {
     $credit_array = array_values($credit_array); //indexを詰める
     $credit_array = array_fill_keys($credit_array, 0); // 配列から連想配列へ変換してvalueに「0」を設定
 
-    // echo "<pre>";
-    // var_dump($debit_array);
-    // var_dump($credit_array);
-    // echo "<pre>";
-
     // 仕訳から生成した連想配列に集計した数値を格納
     foreach ($data as $value) {
         // dataの仕訳要素が「""」でなければ
@@ -178,11 +179,6 @@ if (count($get_file_info) > 0) {
             $credit_array[$value[$header[7]]] += $value[$header[8]];
         }
     }
-
-    // echo "<pre>";
-    // var_dump($debit_array);
-    // var_dump($credit_array);
-    // echo "<pre>";
 
     flock($file, LOCK_UN);
     fclose($file);
