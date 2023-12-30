@@ -13,7 +13,7 @@ if (count($_GET) > 0) {
 }
 
 // DB接続
-$pdo = connectToDB();
+$pdo = connectToDB($db_name);
 
 // customer_info_input.phpから受け取った登録情報をDBに格納
 if (isset($_POST["customer_id"]) && $_POST["customer_id"] != "") {
