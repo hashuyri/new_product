@@ -6,7 +6,7 @@
 // 法人番号が登録されている場合
 $error_comment = "";
 if (count($_GET) > 0) {
-  $error_comment = $_GET["business_id"] . "は既に登録されています。";
+  $error_comment = $_GET["customer_id"] . "は既に登録されています。";
 }
 ?>
 
@@ -30,13 +30,13 @@ if (count($_GET) > 0) {
 
       <!-- Mysqlはintの桁数が限られているためtextで代用 -->
       <div>
-        法人番号： <input type="text" pattern="[0-9]{13}" name="business_id" placeholder="1234567890123" required>
+        法人番号： <input type="text" pattern="[0-9]{13}" name="customer_id" placeholder="1234567890123" required>
         <a href="https://www.houjin-bangou.nta.go.jp/" target="_blank" rel="noopener noreferrer">
           【参考】国税庁法人番号公表サイト
         </a>
       </div>
       <div>
-        会社名： <input type="text" name="business_name" required>
+        会社名： <input type="text" name="customer_name" required>
       </div>
       <div>
         代表者名： <input type="text" name="representative" required>

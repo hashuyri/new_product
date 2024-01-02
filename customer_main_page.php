@@ -1,6 +1,7 @@
 <?php
 include("master_process.php");
 include("file_process.php");
+include("disclosure_items.php");
 ?>
 
 <!DOCTYPE html>

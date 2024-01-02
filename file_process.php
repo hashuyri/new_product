@@ -19,8 +19,6 @@ if (!file_exists($directory)) {
     mkdir($directory, 0755);
 }
 
-$comment = ""; // エラー対策で外だし
-
 // ファイルがアップロードされているか確認
 if (is_uploaded_file($tmp_file)) {
     $file_name = $directory . "/" . $files["name"]; // フォルダの指定
@@ -30,10 +28,11 @@ if (is_uploaded_file($tmp_file)) {
     } else {
         $comment = "ファイルをアップロードできません。";
     }
+} else {
+    $comment = "";
 }
 
 $get_file_info = [];
-$str = "";
 $data = [];
 $debit_array = []; // エラー対策で外だし
 $credit_array = []; // エラー対策で外だし
@@ -76,7 +75,7 @@ if (count($get_file_info) > 0) {
         // echo "<pre>";
 
         // DB接続
-        $pdo = connect_to_db();
+        $pdo = connectToDB($db_name);
 
         // テーブルの作成
         $table_name = "T" . $customer_id;
@@ -112,7 +111,7 @@ if (count($get_file_info) > 0) {
                         $header[10], created_at, updated_at)
                         VALUES
                         ('$row[0]', '$entryDate', '$row[2]', '$row[3]', '$row[4]',
-                        '$row[5]', '$row[6]',' $row[7]', '$row[8]', '$row[9]',
+                        '$row[5]', '$row[6]','$row[7]', '$row[8]', '$row[9]',
                         '$row[10]', now(), now()
                 )";
                 $stmt = $pdo->prepare($sql);
@@ -121,68 +120,10 @@ if (count($get_file_info) > 0) {
                 // echo "<pre>";
 
                 // SQL実行（実行に失敗すると `sql error ...` が出力される）
-                try {
-                    $stmt->execute();
-                } catch (PDOException $e) {
-                    echo json_encode(["sql error" => "{$e->getMessage()}"]);
-                    exit();
-                }
+                tryQuery($stmt);
             }
         }
     }
-
-    // MySQLの情報をsumifする
-    // $sql = "SELECT $header[3], SUM($header[4]) as total_sum FROM $table_name GROUP BY $header[3]";
-    // $stmt = $pdo->prepare($sql);
-    // try {
-    //     $stmt->execute();
-    // } catch (PDOException $e) {
-    //     echo json_encode(["sql error" => "{$e->getMessage()}"]);
-    //     exit();
-    // }
-    // $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // echo "<pre>";
-    // var_dump($row);
-    // echo "<pre>";
-    // $total_sum = $row["total_sum"];
-
-    // 仕訳帳から科目を取り出す
-    foreach ($data as $value) {
-        $tentative_debit_array[] = $value[$header[3]];
-        $tentative_credit_array[] = $value[$header[7]];
-    }
-
-    $debit_array = array_unique($tentative_debit_array); // 重複している借方科目の削除
-    $debit_array = array_diff($debit_array, array("")); //要素なしを削除
-    $debit_array = array_values($debit_array); //indexを詰める
-    $debit_array = array_fill_keys($debit_array, 0); // 配列から連想配列へ変換してvalueに「0」を設定
-
-    $credit_array = array_unique($tentative_credit_array); // 重複している貸方科目の削除
-    $credit_array = array_diff($credit_array, array("")); //要素なしを削除
-    $credit_array = array_values($credit_array); //indexを詰める
-    $credit_array = array_fill_keys($credit_array, 0); // 配列から連想配列へ変換してvalueに「0」を設定
-
-    // echo "<pre>";
-    // var_dump($debit_array);
-    // var_dump($credit_array);
-    // echo "<pre>";
-
-    // 仕訳から生成した連想配列に集計した数値を格納
-    foreach ($data as $value) {
-        // dataの仕訳要素が「""」でなければ
-        if (in_array($value[$header[3]], array_keys($debit_array))) {
-            $debit_array[$value[$header[3]]] += $value[$header[4]];
-        }
-
-        if (in_array($value[$header[7]], array_keys($credit_array))) {
-            $credit_array[$value[$header[7]]] += $value[$header[8]];
-        }
-    }
-
-    // echo "<pre>";
-    // var_dump($debit_array);
-    // var_dump($credit_array);
-    // echo "<pre>";
 
     flock($file, LOCK_UN);
     fclose($file);

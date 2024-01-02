@@ -2,17 +2,12 @@
 include("functions.php");
 
 // DB接続
-$pdo = connect_to_db();
+$pdo = connectToDB($db_name);
 
 // 法人番号と事業所名と作成日を表示
 $sql = "SELECT customer_id, customer_name FROM $master_table ORDER BY created_at ASC";
 $stmt = $pdo->prepare($sql);
-try {
-  $stmt->execute();
-} catch (PDOException $e) {
-  echo json_encode(["sql error" => "{$e->getMessage()}"]);
-  exit();
-}
+tryQuery($stmt);
 
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $output = "";

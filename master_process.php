@@ -8,13 +8,15 @@ include("functions.php");
 // info_read.phpから受け取ったcustomer_idを格納
 if (count($_GET) > 0) {
     $customer_id = $_GET["customer_id"];
+    // テーブル
+    $table_name = "T" . $customer_id;
 }
 
 // DB接続
-$pdo = connect_to_db();
+$pdo = connectToDB($db_name);
 
 // customer_info_input.phpから受け取った登録情報をDBに格納
-if (isset($_POST["customer_id"]) && $_POST["customer_id"] != '') {
+if (isset($_POST["customer_id"]) && $_POST["customer_id"] != "") {
     // 登録情報を各変数に格納する
     $customer_info_array = array_keys($_POST);
     $customer_id = $_POST["customer_id"];
@@ -28,17 +30,12 @@ if (isset($_POST["customer_id"]) && $_POST["customer_id"] != '') {
     $closing_month = new DateTime("last day of $closing_month"); // 指定された月の月末を取得
     $closing_month = $closing_month->format("Y-m-d");
     $class_radio = $_POST["class_radio"];
-
+    
     // 既に登録された法人番号かどうか確認 
     $sql = "SELECT customer_id FROM $master_table WHERE customer_id=$customer_id";
     $stmt = $pdo->prepare($sql);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
-    try {
-        $stmt->execute();
-    } catch (PDOException $e) {
-        echo json_encode(["sql error" => "{$e->getMessage()}"]);
-        exit();
-    }
+    tryQuery($stmt);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($result != false) {
@@ -68,26 +65,13 @@ if (isset($_POST["customer_id"]) && $_POST["customer_id"] != '') {
     )";
     $stmt = $pdo->prepare($sql);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
-    try {
-        $stmt->execute();
-    } catch (PDOException $e) {
-        echo json_encode(["sql error" => "{$e->getMessage()}"]);
-        exit();
-    }
+    tryQuery($stmt);
 }
 
-// echo "<pre>";
-// var_dump($customer_id);
-// echo "<pre>";
 $sql = "SELECT * FROM $master_table WHERE customer_id=$customer_id";
 $stmt = $pdo->prepare($sql);
 // SQL実行（実行に失敗すると `sql error ...` が出力される）
-try {
-    $stmt->execute();
-} catch (PDOException $e) {
-    echo json_encode(["sql error" => "{$e->getMessage()}"]);
-    exit();
-}
+tryQuery($stmt);
 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 // echo "<pre>";
 // var_dump($result);
