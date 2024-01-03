@@ -39,7 +39,7 @@ include("disclosure_items.php");
                         </label>
                         <label id="upload_btn">
                             実行
-                            <input type="submit" value="upload">
+                            <input type="submit" value="upload" id="upload">
                         </label>
                     </form>
                 </div>

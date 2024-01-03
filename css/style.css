@@ -1,7 +1,6 @@
 body {
     margin: 0;
     font-size: 25px;
-    font-weight: bold;
 }
 
 h1 {
@@ -12,6 +11,7 @@ h1 {
 
 #customer_all {
     padding-left: 2%;
+    font-weight: bold;
 }
 
 /*モーダルを開くボタン*/
@@ -175,12 +175,18 @@ tr {
     text-align: left;
 }
 
-th,
-td {
+th {
     padding: 1%;
     width: 25%;
     border: 1px black solid;
     font-size: 25px;
+}
+
+td {
+    padding: 1%;
+    width: 25%;
+    border: 1px black solid;
+    font-size: 21px;
 }
 
 /* 数値は右寄せ */
@@ -194,7 +200,7 @@ td {
 }
 
 .horizontal_total {
-    background-color: #d2ebd2;
+    background-color: #f4fff4;
 }
 
 /* 集計結果ボタンを真ん中配置するため */
@@ -222,4 +228,20 @@ td {
 
 #submit:hover {
     transform: translateX(-0.5px) translateY(-1px);
+}
+
+.one_space {
+    padding-left: 2.8%;
+}
+
+.two_space {
+    padding-left: 4.5%;
+}
+
+.three_space {
+    padding-left: 6.3%;
+}
+
+.four_space {
+    padding-left: 8.2%;
 }

@@ -37,40 +37,42 @@ function findAccountItem($debit_array, $credit_array, $account_table, $pdo)
     $sql = "SELECT * FROM $account_table";
     $stmt = $pdo->prepare($sql);
     tryQuery($stmt);
-    $account_item_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $account_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // 標準勘定科目と一致しているか確認
-    for ($i = 0; $i < count($account_item_array); $i++) {
-        $item = $account_item_array[$i]["account_item"];
-        $account_item_array[$i]["debit_sum"] = 0;
-        $account_item_array[$i]["credit_sum"] = 0;
-        unset($account_item_array[$i]["created_at"], $account_item_array[$i]["updated_at"]);
+    for ($i = 0; $i < count($account_array); $i++) {
+        $item = $account_array[$i]["account_item"];
+        $account_array[$i]["debit_sum"] = 0;
+        $account_array[$i]["credit_sum"] = 0;
+        unset($account_array[$i]["created_at"], $account_array[$i]["updated_at"]);
         for ($j = 0; $j < count($debit_array); $j++) {
             if ($item === $debit_array[$j]["debit_item"]) {
                 // 勘定科目の情報を移植
-                $account_item_array[$i]["debit_sum"] += $debit_array[$j]["debit_sum"];
+                $account_array[$i]["debit_sum"] += $debit_array[$j]["debit_sum"];
+                // 勘定科目の一致が確認出来た要素を削除
                 array_splice($debit_array, $j, 1);
             }
         }
         for ($j = 0; $j < count($credit_array); $j++) {
             if ($item === $credit_array[$j]["credit_item"]) {
                 // 勘定科目の情報を移植
-                $account_item_array[$i]["credit_sum"] += $credit_array[$j]["credit_sum"];
+                $account_array[$i]["credit_sum"] += $credit_array[$j]["credit_sum"];
+                // 勘定科目の一致が確認出来た要素を削除
                 array_splice($credit_array, $j, 1);
             }
         }
     }
 
     // 標準勘定科目に該当しなかった勘定科目がある場合に標準勘定科目と近似しているか確認
-    for ($i = 0; $i < count($account_item_array); $i++) {
-        $str_1 = $account_item_array[$i]["account_item"];
+    for ($i = 0; $i < count($account_array); $i++) {
+        $str_1 = $account_array[$i]["account_item"];
         for ($j = 0; $j < count($debit_array); $j++) {
             $str_2 = $debit_array[$j]["debit_item"];
             // レーベンシュタイン距離（文字列がどれだけ似ているか確認）
             $result = levenshtein($str_1, $str_2);
             if ($result < 4) {
                 // 勘定科目の情報を移植
-                $account_item_array[$i]["debit_item"] = $debit_array[$j]["debit_sum"];
+                $account_array[$i]["debit_item"] = $debit_array[$j]["debit_sum"];
                 array_splice($debit_array, $j, 1);
             }
         }
@@ -80,7 +82,7 @@ function findAccountItem($debit_array, $credit_array, $account_table, $pdo)
             $result = levenshtein($str_1, $str_3);
             if ($result < 4) {
                 // 勘定科目の情報を移植
-                $account_item_array[$i]["credit_sum"] += $credit_array[$j]["credit_sum"];
+                $account_array[$i]["credit_sum"] += $credit_array[$j]["credit_sum"];
                 array_splice($credit_array, $j, 1);
             }
         }
@@ -95,6 +97,12 @@ function findAccountItem($debit_array, $credit_array, $account_table, $pdo)
         echo "<pre>";
         var_dump($credit_array);
         echo "<pre>";
+    }
+    $account_item_array = [];
+    foreach($account_array as $value){
+        if($value["debit_sum"] != 0 || $value["credit_sum"] != 0){
+            $account_item_array[] = $value;
+        }
     }
     return $account_item_array;
 }
