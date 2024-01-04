@@ -100,7 +100,7 @@ function findAccountItem($debit_array, $credit_array, $account_table, $pdo)
     }
     $account_item_array = [];
     foreach($account_array as $value){
-        if($value["debit_sum"] != 0 || $value["credit_sum"] != 0){
+        if($value["debit_sum"] != 0 || $value["credit_sum"] != 0 || $value["account_id"] === "1313232"){
             $account_item_array[] = $value;
         }
     }
