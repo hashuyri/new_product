@@ -39,7 +39,7 @@ include("disclosure_items.php");
                         </label>
                         <label id="upload_btn">
                             実行
-                            <input type="submit" value="upload">
+                            <input type="submit" value="upload" id="upload">
                         </label>
                     </form>
                 </div>
@@ -66,10 +66,8 @@ include("disclosure_items.php");
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <!-- 他のJSファイルでPHPの値を使えるように -->
     <script>
-        const debit_array = <?= json_encode($debit_array) ?>;
-        const credit_array = <?= json_encode($credit_array) ?>;
+        const account_item_array = <?= json_encode($account_item_array) ?>;
     </script>
-    <script src="./js/acitem.js"></script>
     <script src="./js/main.js"></script>
 </body>
 

@@ -30,90 +30,81 @@ function tryQuery($stmt)
     }
 }
 
-// 借方勘定科目を標準勘定科目と突合
-function findAccountItemDebit($debit_array, $db_table, $pdo, $account_item_array)
+// 勘定科目を標準勘定科目と突合
+function findAccountItem($debit_array, $credit_array, $account_table, $pdo)
 {
+    // DBから標準勘定科目をすべて抽出
+    $sql = "SELECT * FROM $account_table";
+    $stmt = $pdo->prepare($sql);
+    tryQuery($stmt);
+    $account_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     // 標準勘定科目と一致しているか確認
-    for ($i = 0; $i < count($debit_array); $i++) {
-        $item = $debit_array[$i]["debit_item"];
-        $sql = "SELECT * FROM $db_table WHERE account_item='$item'";
-        $stmt = $pdo->prepare($sql);
-        tryQuery($stmt);
-        // 標準勘定科目と一致していたら値が格納される
-        $find = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($find) {
-            // 勘定科目の情報を移植
-            $debit_array[$i] = $find + $debit_array[$i];
-            // 不要な要素を削除
-            unset($debit_array[$i]["debit_item"], $debit_array[$i]["created_at"], $debit_array[$i]["updated_at"]);
+    for ($i = 0; $i < count($account_array); $i++) {
+        $item = $account_array[$i]["account_item"];
+        $account_array[$i]["debit_sum"] = 0;
+        $account_array[$i]["credit_sum"] = 0;
+        unset($account_array[$i]["created_at"], $account_array[$i]["updated_at"]);
+        for ($j = 0; $j < count($debit_array); $j++) {
+            if ($item === $debit_array[$j]["debit_item"]) {
+                // 勘定科目の情報を移植
+                $account_array[$i]["debit_sum"] += $debit_array[$j]["debit_sum"];
+                // 勘定科目の一致が確認出来た要素を削除
+                array_splice($debit_array, $j, 1);
+            }
+        }
+        for ($j = 0; $j < count($credit_array); $j++) {
+            if ($item === $credit_array[$j]["credit_item"]) {
+                // 勘定科目の情報を移植
+                $account_array[$i]["credit_sum"] += $credit_array[$j]["credit_sum"];
+                // 勘定科目の一致が確認出来た要素を削除
+                array_splice($credit_array, $j, 1);
+            }
         }
     }
 
     // 標準勘定科目に該当しなかった勘定科目がある場合に標準勘定科目と近似しているか確認
-    for ($i = 0; $i < count($debit_array); $i++) {
-        if (count($debit_array[$i]) < 3) {
-            $str_1 = $debit_array[$i]["debit_item"];
-            foreach ($account_item_array as $item) {
-                $str_2 = $item["account_item"];
-                // レーベンシュタイン距離（文字列がどれだけ似ているか確認）
-                $result = levenshtein($str_1, $str_2);
-                if ($result < 4) {
-                    $debit_array[$i] = $item + $debit_array[$i];
-                    unset($debit_array[$i]["debit_item"], $debit_array[$i]["created_at"], $credit_array[$i]["updated_at"]);
-                }
+    for ($i = 0; $i < count($account_array); $i++) {
+        $str_1 = $account_array[$i]["account_item"];
+        for ($j = 0; $j < count($debit_array); $j++) {
+            $str_2 = $debit_array[$j]["debit_item"];
+            // レーベンシュタイン距離（文字列がどれだけ似ているか確認）
+            $result = levenshtein($str_1, $str_2);
+            if ($result < 4) {
+                // 勘定科目の情報を移植
+                $account_array[$i]["debit_item"] = $debit_array[$j]["debit_sum"];
+                array_splice($debit_array, $j, 1);
             }
-            // 類似する勘定科目がなかったらお知らせ
-            if (count($debit_array[$i]) < 3) {
-                echo "<pre>";
-                var_dump($debit_array[$i]);
-                echo "<pre>";
+        }
+        for ($j = 0; $j < count($credit_array); $j++) {
+            $str_3 = $credit_array[$j]["credit_item"];
+            // レーベンシュタイン距離（文字列がどれだけ似ているか確認）
+            $result = levenshtein($str_1, $str_3);
+            if ($result < 4) {
+                // 勘定科目の情報を移植
+                $account_array[$i]["credit_sum"] += $credit_array[$j]["credit_sum"];
+                array_splice($credit_array, $j, 1);
             }
         }
     }
-    return $debit_array;
-}
-
-// 貸方勘定科目を標準勘定科目と突合
-function findAccountItemCredit($credit_array, $db_table, $pdo, $account_item_array)
-{
-    // 標準勘定科目と一致しているか確認
-    for ($i = 0; $i < count($credit_array); $i++) {
-        $item = $credit_array[$i]["credit_item"];
-        $sql = "SELECT * FROM $db_table WHERE account_item='$item'";
-        $stmt = $pdo->prepare($sql);
-        tryQuery($stmt);
-        // 標準勘定科目と一致していたら値が格納される
-        $find = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($find) {
-            // 勘定科目の情報を移植
-            $credit_array[$i] = $find + $credit_array[$i];
-            // 不要な要素を削除
-            unset($credit_array[$i]["credit_item"], $credit_array[$i]["created_at"], $credit_array[$i]["updated_at"]);
+    // 類似する勘定科目がなかったらお知らせ
+    if (count($debit_array) > 0) {
+        echo "<pre>";
+        var_dump($debit_array);
+        echo "<pre>";
+    }
+    if (count($credit_array) > 0) {
+        echo "<pre>";
+        var_dump($credit_array);
+        echo "<pre>";
+    }
+    $account_item_array = [];
+    foreach($account_array as $value){
+        if($value["debit_sum"] != 0 || $value["credit_sum"] != 0 || $value["account_id"] === "1313232"){
+            $account_item_array[] = $value;
         }
     }
-    
-    // 標準勘定科目に該当しなかった勘定科目がある場合に標準勘定科目と近似しているか確認
-    for ($i = 0; $i < count($credit_array); $i++) {
-        if (count($credit_array[$i]) < 3) {
-            $str_1 = $credit_array[$i]["credit_item"];
-            foreach ($account_item_array as $item) {
-                $str_2 = $item["account_item"];
-                // レーベンシュタイン距離（文字列がどれだけ似ているか確認）
-                $result = levenshtein($str_1, $str_2);
-                if ($result < 4) {
-                    $credit_array[$i] = $item + $credit_array[$i];
-                    unset($credit_array[$i]["credit_item"], $credit_array[$i]["created_at"], $credit_array[$i]["updated_at"]);
-                }
-            }
-            // 類似する勘定科目がなかったらお知らせ
-            if (count($credit_array[$i]) < 3) {
-                echo "<pre>";
-                var_dump($credit_array[$i]);
-                echo "<pre>";
-            }
-        }
-    }
-    return $credit_array;
+    return $account_item_array;
 }
 
 ?>
