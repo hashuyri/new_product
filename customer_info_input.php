@@ -1,4 +1,7 @@
 <?php
+session_start();
+include('functions.php');
+checkSessionId();
 // echo "<pre>";
 // var_dump(count($_GET));
 // echo "<pre>";

@@ -30,6 +30,18 @@ function tryQuery($stmt)
     }
 }
 
+// ログイン状態のチェック関数
+function checkSessionId()
+{
+    if (!isset($_SESSION["session_id"]) || $_SESSION["session_id"] !== session_id()) {
+        header('Location:login.php');
+        exit();
+    } else {
+        session_regenerate_id(true);
+        $_SESSION["session_id"] = session_id();
+    }
+}
+
 // 勘定科目を標準勘定科目と突合
 function findAccountItem($debit_array, $credit_array, $account_table, $pdo)
 {

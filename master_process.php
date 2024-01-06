@@ -1,6 +1,4 @@
 <?php
-include("functions.php");
-
 // echo "<pre>";
 // var_dump(count($_GET));
 // echo "<pre>";
@@ -30,10 +28,11 @@ if (isset($_POST["customer_id"]) && $_POST["customer_id"] != "") {
     $closing_month = new DateTime("last day of $closing_month"); // 指定された月の月末を取得
     $closing_month = $closing_month->format("Y-m-d");
     $class_radio = $_POST["class_radio"];
-    
+
     // 既に登録された法人番号かどうか確認 
-    $sql = "SELECT customer_id FROM $master_table WHERE customer_id=$customer_id";
+    $sql = "SELECT customer_id FROM $master_table WHERE customer_id=:customer_id";
     $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':customer_id', $customer_id, PDO::PARAM_STR);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
     tryQuery($stmt);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -45,13 +44,13 @@ if (isset($_POST["customer_id"]) && $_POST["customer_id"] != "") {
 
     // テーブルの作成
     $pdo->query("create table if not exists $master_table (
-            $customer_info_array[0] VARCHAR(128), $customer_info_array[1] VARCHAR(128),
-            $customer_info_array[2] VARCHAR(128), $customer_info_array[3] INT(7),
-            $customer_info_array[4] VARCHAR(128), $customer_info_array[5] VARCHAR(12),
-            $customer_info_array[6] VARCHAR(128), $customer_info_array[7] DATE,
-            $customer_info_array[8] VARCHAR(128), created_at DATETIME, updated_at DATETIME,
-            PRIMARY KEY ($customer_info_array[0]))
-    "); // PRIMARY KEYは法人番号を設定
+        $customer_info_array[0] VARCHAR(128), $customer_info_array[1] VARCHAR(128),
+        $customer_info_array[2] VARCHAR(128), $customer_info_array[3] INT(7),
+        $customer_info_array[4] VARCHAR(128), $customer_info_array[5] VARCHAR(12),
+        $customer_info_array[6] VARCHAR(128), $customer_info_array[7] DATE,
+        $customer_info_array[8] VARCHAR(128), created_at DATETIME, updated_at DATETIME,
+        PRIMARY KEY ($customer_info_array[0]))
+        "); // PRIMARY KEYは法人番号を設定
 
     // テーブルにデータを書き込み
     $sql = "INSERT INTO $master_table ($customer_info_array[0], $customer_info_array[1],
@@ -59,11 +58,17 @@ if (isset($_POST["customer_id"]) && $_POST["customer_id"] != "") {
         $customer_info_array[5], $customer_info_array[6], $customer_info_array[7],
         $customer_info_array[8], created_at, updated_at)
         VALUES
-        ('$customer_id', '$customer_name', '$representative',
-        '$address_number', '$address', '$tel',' $mail_address',
+        (:customer_id, :customer_name, :representative,
+        '$address_number', :address, :tel,:mail_address,
         '$closing_month', '$class_radio', now(), now()
     )";
     $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':customer_id', $customer_id, PDO::PARAM_STR);
+    $stmt->bindValue(':customer_name', $customer_name, PDO::PARAM_STR);
+    $stmt->bindValue(':representative', $representative, PDO::PARAM_STR);
+    $stmt->bindValue(':address', $address, PDO::PARAM_STR);
+    $stmt->bindValue(':tel', $tel, PDO::PARAM_STR);
+    $stmt->bindValue(':mail_address', $mail_address, PDO::PARAM_STR);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
     tryQuery($stmt);
 }

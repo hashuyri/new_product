@@ -23,6 +23,8 @@ if ($find_table["cnt"] === 1) {
 
     // 勘定科目情報の付与
     $account_item_array = findAccountItem($debit_array, $credit_array, $account_table, $pdo);
+} else {
+    $account_item_array = 0;
 }
 
 ?>

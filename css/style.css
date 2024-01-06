@@ -9,8 +9,9 @@ h1 {
     text-align: end;
 }
 
-#customer_all {
-    padding-left: 2%;
+#customer_all,
+#logout_text {
+    margin-left: 2%;
     font-weight: bold;
 }
 
