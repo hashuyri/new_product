@@ -3,14 +3,9 @@ session_start();
 include('functions.php');
 checkSessionId();
 // echo "<pre>";
-// var_dump(count($_GET));
+// var_dump($_SESSION);
 // echo "<pre>";
 
-// 法人番号が登録されている場合
-$error_comment = "";
-if (count($_GET) > 0) {
-  $error_comment = $_GET["customer_id"] . "は既に登録されています。";
-}
 ?>
 
 <!DOCTYPE html>
@@ -23,9 +18,7 @@ if (count($_GET) > 0) {
 </head>
 
 <body>
-  <p>
-    <?= $error_comment ?>
-  </p>
+  
   <form action="customer_main_page.php" method="POST" enctype="multipart/form-data">
     <fieldset>
       <legend>事業者情報（入力画面）</legend>
@@ -39,21 +32,21 @@ if (count($_GET) > 0) {
         </a>
       </div>
       <div>
-        会社名： <input type="text" name="customer_name" required>
+        会社名： <input type="text" name="customer_name" autocomplete="organization" required>
       </div>
       <div>
-        代表者名： <input type="text" name="representative" required>
+        代表者名： <input type="text" name="representative" autocomplete="name" required>
       </div>
       <div>
-        郵便番号： <input type="number" pattern="[0-9]{7}" name="address_number" required>
+        郵便番号： <input type="number" pattern="[0-9]{7}" name="address_number" autocomplete="postal-code" required>
         住所： <input type="text" name="address" required>
       </div>
       <div>
-        電話番号： <input type="text" pattern="[0-9]{7-12}" name="tel" placeholder="01234567890" required>
+        電話番号： <input type="text" pattern="[0-9]{7-12}" name="tel" placeholder="01234567890" autocomplete="tel" required>
       </div>
       <div>
-        メールアドレス： <input type="email" name="mail_address" required>
-      </div>
+        メールアドレス： <p><?=$_SESSION["user_id"]?></p>
+      </>
       <div>
         決算月: <input type="month" name="closing_month" required>
       </div>

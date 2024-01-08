@@ -27,7 +27,8 @@ include("disclosure_items.php");
     <div id="modal_open_outbox">
         <p class="modal-open">資料のアップロードはこちら</p>
     </div>
-    <a href="logout.php" id="logout_text">ログアウト</a>
+    <a href="member_authority.php" id="member_authority">メンバー管理</a>
+    <a href="logout.php" id="main_page_logout">ログアウト</a>
 
     <div class="modal-container">
         <div class="modal-body">

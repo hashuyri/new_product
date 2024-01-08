@@ -13,7 +13,7 @@ $password = $_POST["password"];
 
 $pdo = connectToDB($db_name);
 
-$sql = 'SELECT COUNT(*) FROM users_table WHERE user_id=:user_id';
+$sql = "SELECT COUNT(*) FROM $users_table WHERE user_id=:user_id";
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
@@ -26,7 +26,7 @@ if ($stmt->fetchColumn() > 0) {
   exit();
 }
 
-$sql = 'INSERT INTO users_table(id, user_id, password, created_at, updated_at, deleted_at) VALUES(NULL, :user_id, :password, now(), now(), NULL)';
+$sql = "INSERT INTO $users_table(id, user_id, password, created_at, updated_at, deleted_at) VALUES(NULL, :user_id, :password, now(), now(), NULL)";
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);

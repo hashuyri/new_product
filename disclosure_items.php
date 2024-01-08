@@ -1,4 +1,5 @@
 <?php
+$table_name = "T" . $customer_id;
 // テーブルの存在確認
 $sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = '$table_name'";
 $stmt = $pdo->prepare($sql);

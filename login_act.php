@@ -27,6 +27,9 @@ if (!$user) {
     $_SESSION = array();
     $_SESSION['session_id'] = session_id();
     $_SESSION['user_id'] = $user['user_id'];
+    $_SESSION['authority'] = "";
+    $_SESSION["customer_id"] = "";
+    $_SESSION["customer_name"] = "";
     header("Location:info_read.php");
     exit();
 }

@@ -3,6 +3,7 @@
 $db_name = "gs_dev14_06";
 $master_table = "master_data_table";
 $account_table = "account_item_table";
+$users_table = "users_table";
 function connectToDB($db_name)
 {
     $user = "root";

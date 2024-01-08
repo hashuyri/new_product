@@ -10,7 +10,8 @@ h1 {
 }
 
 #customer_all,
-#logout_text {
+#member_authority,
+#main_page_logout {
     margin-left: 2%;
     font-weight: bold;
 }
