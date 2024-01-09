@@ -7,7 +7,7 @@ if (count($_GET) > 0) {
     $customer_id = $_GET["customer_id"];
 
     // ユーザーの権限を取得
-    $user_table_name = "UT" . $_SESSION["customer_id"];
+    $user_table_name = "UT" . $customer_id;
     $user_id = $_SESSION["user_id"];
     $sql = "SELECT authority FROM $user_table_name WHERE user_id=:user_id";
     $stmt = $pdo->prepare($sql);
@@ -16,7 +16,7 @@ if (count($_GET) > 0) {
     tryQuery($stmt);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $_SESSION["authority"] = $result["authority"];
-
+    
     // 企業情報を取得
     $sql = "SELECT * FROM $master_table WHERE customer_id= :customer_id";
     $stmt = $pdo->prepare($sql);
@@ -101,7 +101,7 @@ if (isset($_POST["customer_id"]) && $_POST["customer_id"] != "") {
     $_SESSION["authority"] = 0;
 }
 
-if ($_SESSION["customer_id"] !== $customer_id){
+if ($_SESSION["customer_id"] !== $customer_id) {
     $_SESSION["customer_id"] = $customer_id;
 }
 if ($_SESSION["customer_name"] !== $result["customer_name"]) {

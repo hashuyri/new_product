@@ -14,23 +14,24 @@ tryQuery($stmt);
 
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $output = "";
-foreach ($result as $record) {
-    if ($record["authority"] === 0) {
+for ($i = 0; $i < count($result); $i++) {
+    if ($result[$i]["authority"] === 0) {
         $authority = "オーナー";
-    } else if ($record["authority"] === 1) {
+    } else if ($result[$i]["authority"] === 1) {
         $authority = "管理者";
     } else {
         $authority = "一般";
     }
+    // idに配列内の要素識別用の番号を付してJSに渡す
     $output .= "
     <tr>
-        <td>{$record["user_id"]}</td>
+        <td>{$result[$i]["user_id"]}</td>
         <td>{$authority}</td>
         <td>
-            <a href='member_update.php?user_id={$record["user_id"]}'>権限変更</a>
+            <button class='authority_update' id=authority_$i>権限変更</button>
         </td>
         <td>
-            <a href='member_delete.php?user_id={$record["user_id"]}'>削除</a>
+            <button class='user_id_delete' id=user_$i>削除</button>
         </td>
     </tr>";
 }
@@ -86,6 +87,38 @@ foreach ($result as $record) {
         </table>
         <a href='customer_main_page.php?customer_id=<?= $_SESSION["customer_id"] ?>'>戻る</a>
     </fieldset>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        // メンバーの権限を変更する場合
+        $(".authority_update").on("click", function () {
+            const submit = confirm('本当に権限変更しますか？');
+            // OKが押されたら
+            if (submit) {
+                // 配列の要素番号を取り出す
+                const str = $(this).attr("id");
+                const i = str.slice(str.indexOf("_") + 1);
+                const user_array = <?= json_encode($result) ?>;
+                console.log(i);
+                console.log(user_array);
+                location.href = `member_update.php?user_id=${user_array[i]["user_id"]}&authority=${user_array[i]["authority"]}`;
+            }
+        });
+
+        // メンバーを削除する場合
+        $(".user_id_delete").on("click", function () {
+            const submit = confirm('本当に削除しますか？');
+            // OKが押されたら
+            if (submit) {
+                // 配列の要素番号を取り出す
+                const str = $(this).attr("id");
+                const i = str.slice(str.indexOf("_") + 1);
+                const user_array = <?= json_encode($result) ?>;
+                location.href = `member_delete.php?user_id=${user_array[i]["user_id"]}&authority=${user_array[i]["authority"]}`;
+            }
+        });
+    </script>
 </body>
 
 </html>
