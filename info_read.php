@@ -38,6 +38,7 @@ foreach ($result as $record) {
   <fieldset>
     <legend>税務判断支援システム（登録情報一覧）</legend>
     <a href="customer_info_input.php">入力画面</a>
+    <a href="logout.php" id="read_page_logout">ログアウト</a>
     <table>
       <thead>
         <tr>

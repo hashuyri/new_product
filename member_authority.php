@@ -26,9 +26,9 @@ for ($i = 0; $i < count($result); $i++) {
     $output .= "
     <tr>
         <td>{$result[$i]["user_id"]}</td>
-        <td>{$authority}</td>
+        <td id=authority_$i><p>{$authority}</p></td>
         <td>
-            <button class='authority_update' id=authority_$i>権限変更</button>
+            <button class='authority_update' id=update_$i>権限変更</button>
         </td>
         <td>
             <button class='user_id_delete' id=user_$i>削除</button>
@@ -63,7 +63,7 @@ for ($i = 0; $i < count($result); $i++) {
                     権限:
                     <select name="authority" required>
                         <option value="" selected disabled>選択してください</option>
-                        <option value=1>管理</option>
+                        <option value=1>管理者</option>
                         <option value=2>一般</option>
                     </select>
                 </div>
@@ -92,17 +92,65 @@ for ($i = 0; $i < count($result); $i++) {
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
         // メンバーの権限を変更する場合
+        const member_array = <?= json_encode($result) ?>;
+        const user_array = <?= json_encode($_SESSION) ?>;
+        let authority_text = [];
         $(".authority_update").on("click", function () {
-            const submit = confirm('本当に権限変更しますか？');
-            // OKが押されたら
-            if (submit) {
-                // 配列の要素番号を取り出す
-                const str = $(this).attr("id");
-                const i = str.slice(str.indexOf("_") + 1);
-                const user_array = <?= json_encode($result) ?>;
-                console.log(i);
+            // 配列の要素番号を取り出す
+            const str = $(this).attr("id");
+            const i = str.slice(str.indexOf("_") + 1);
+            const authority_id = "authority_" + i;
+
+            if ($(this).text() === "権限変更") {
+                // OKに変換
+                $(this).text("OK");
+                authority_text.push($("#" + authority_id).text());
+
+                // 権限のプルダウンを表示
+                $("#" + authority_id).html(
+                    `<select name="authority" required>
+                    <option value="" selected disabled>選択してください</option>
+                    <option value=0>オーナー</option>
+                    <option value=1>管理者</option>
+                    <option value=2>一般</option>
+                    </select>`
+                );
+            } else {
+                // OKに変換
+                $(this).text("権限変更");
+                authority_text.push($("[ name=authority] option:selected").text());
+                authority_text[1] = authority_text[1].slice(8);
                 console.log(user_array);
-                location.href = `member_update.php?user_id=${user_array[i]["user_id"]}&authority=${user_array[i]["authority"]}`;
+                console.log(member_array);
+
+                // 権限変更の分岐
+                if (user_array.authority > 1 || authority_text[0] === "オーナー") {
+                    alert("変更する権限がありません。");
+                    $("#" + authority_id).html(`
+                        <p>${authority_text[0]}</p>
+                    `);
+                } else if (authority_text[1] === "オーナー" && user_array.authority !== 0) {
+                    alert("オーナー権限への変更はできません。");
+                    $("#" + authority_id).html(`
+                        <p>${authority_text[0]}</p>
+                    `);
+                } else if (user_array.user_id === member_array[i].user_id) {
+                    alert("無効な操作です。");
+                    $("#" + authority_id).html(`
+                        <p>${authority_text[0]}</p>
+                    `);
+                } else {
+                    const submit = confirm('本当に権限変更を実施しますか？');
+                    // OKが押されたら
+                    if (submit) {
+                        location.href = `member_update.php?user_id=${member_array[i]["user_id"]}&before_authority=${member_array[i]["authority"]}&after_authority=${authority_text[1]}`;
+                    } else {
+                        $("#" + authority_id).html(`
+                            <p>${authority_text[0]}</p>
+                        `);
+                    }
+                }
+                authority_text = [];
             }
         });
 
@@ -114,8 +162,7 @@ for ($i = 0; $i < count($result); $i++) {
                 // 配列の要素番号を取り出す
                 const str = $(this).attr("id");
                 const i = str.slice(str.indexOf("_") + 1);
-                const user_array = <?= json_encode($result) ?>;
-                location.href = `member_delete.php?user_id=${user_array[i]["user_id"]}&authority=${user_array[i]["authority"]}`;
+                location.href = `member_delete.php?user_id=${member_array[i]["user_id"]}&authority=${member_array[i]["authority"]}`;
             }
         });
     </script>

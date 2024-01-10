@@ -16,7 +16,10 @@ if (count($_GET) > 0) {
     tryQuery($stmt);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $_SESSION["authority"] = $result["authority"];
-    
+    // echo "<pre>";
+    // var_dump($_SESSION);
+    // echo "<pre>";
+
     // 企業情報を取得
     $sql = "SELECT * FROM $master_table WHERE customer_id= :customer_id";
     $stmt = $pdo->prepare($sql);
