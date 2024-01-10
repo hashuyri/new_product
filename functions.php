@@ -3,6 +3,7 @@
 $db_name = "gs_dev14_06";
 $master_table = "master_data_table";
 $account_table = "account_item_table";
+$users_table = "users_table";
 function connectToDB($db_name)
 {
     $user = "root";
@@ -27,6 +28,18 @@ function tryQuery($stmt)
     } catch (PDOException $e) {
         echo json_encode(["sql error" => "{$e->getMessage()}"]);
         exit();
+    }
+}
+
+// ログイン状態のチェック関数
+function checkSessionId()
+{
+    if (!isset($_SESSION["session_id"]) || $_SESSION["session_id"] !== session_id()) {
+        header('Location:login.php');
+        exit();
+    } else {
+        session_regenerate_id(true);
+        $_SESSION["session_id"] = session_id();
     }
 }
 

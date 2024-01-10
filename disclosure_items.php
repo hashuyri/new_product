@@ -1,4 +1,5 @@
 <?php
+$table_name = "T" . $customer_id;
 // テーブルの存在確認
 $sql = "SELECT count(*) as cnt FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = '$table_name'";
 $stmt = $pdo->prepare($sql);
@@ -23,6 +24,8 @@ if ($find_table["cnt"] === 1) {
 
     // 勘定科目情報の付与
     $account_item_array = findAccountItem($debit_array, $credit_array, $account_table, $pdo);
+} else {
+    $account_item_array = 0;
 }
 
 ?>

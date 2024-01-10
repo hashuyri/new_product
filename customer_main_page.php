@@ -1,4 +1,7 @@
 <?php
+session_start();
+include('functions.php');
+checkSessionId();
 include("master_process.php");
 include("file_process.php");
 include("disclosure_items.php");
@@ -16,12 +19,16 @@ include("disclosure_items.php");
 
 <body>
     <header>
-        <h1><?=$result["customer_name"]?></h1>
+        <h1>
+            <?= $result["customer_name"] ?>
+        </h1>
     </header>
     <a href="info_read.php" id="customer_all">事業者変更</a>
     <div id="modal_open_outbox">
         <p class="modal-open">資料のアップロードはこちら</p>
     </div>
+    <a href="member_authority.php" id="member_authority">メンバー管理</a>
+    <a href="logout.php" id="main_page_logout">ログアウト</a>
 
     <div class="modal-container">
         <div class="modal-body">
