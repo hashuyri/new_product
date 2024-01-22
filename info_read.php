@@ -4,7 +4,7 @@ include("functions.php");
 // DB接続
 $pdo = connectToDB($db_name);
 
-// 法人番号と事業所名と作成日を表示
+// 法人番号と事業所名を表示
 $sql = "SELECT customer_id, customer_name FROM $master_table ORDER BY created_at ASC";
 $stmt = $pdo->prepare($sql);
 tryQuery($stmt);
@@ -14,7 +14,6 @@ $output = "";
 foreach ($result as $record) {
   $output .= "
     <tr>
-      <td>{$record["customer_id"]}</td>
       <td>{$record["customer_name"]}</td>
       <td>
         <a href='customer_main_page.php?customer_id={$record["customer_id"]}'>選択</a>
@@ -42,7 +41,6 @@ foreach ($result as $record) {
     <table>
       <thead>
         <tr>
-          <th>法人番号</th>
           <th>事業所名</th>
           <th></th>
           <th></th>
