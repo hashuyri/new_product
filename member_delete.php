@@ -31,8 +31,9 @@ if ($_SESSION["authority"] > 1) {
 $pdo = connectToDB($db_name);
 
 // テーブルにデータを書き込み
-$user_table_name = "UT" . $_SESSION["customer_id"];
-$sql = "DELETE FROM $user_table_name WHERE user_id='$user_id'";
+$user_table_name = "registered_user_table";
+$customer_id = $_SESSION["customer_id"];
+$sql = "DELETE FROM $user_table_name WHERE customer_id=$customer_id AND user_id='$user_id'";
 $stmt = $pdo->prepare($sql);
 // SQL実行（実行に失敗すると `sql error ...` が出力される）
 tryQuery($stmt);

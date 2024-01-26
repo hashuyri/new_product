@@ -10,7 +10,7 @@ $password = $_POST["password"];
 $pdo = connectToDB($db_name);
 
 // SQL実行
-$sql = "SELECT * FROM users_table WHERE user_id=:user_id AND password=:password AND deleted_at IS NULL";
+$sql = "SELECT * FROM $users_table WHERE user_id=:user_id AND password=:password AND deleted_at IS NULL";
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
 $stmt->bindValue(':password', $password, PDO::PARAM_STR);
@@ -31,5 +31,4 @@ if (!$user) {
     $_SESSION["customer_id"] = "";
     $_SESSION["customer_name"] = "";
     header("Location:info_read.php");
-    exit();
 }

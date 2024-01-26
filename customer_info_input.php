@@ -24,13 +24,6 @@ checkSessionId();
       <legend>事業者情報（入力画面）</legend>
       <a href="info_read.php">登録情報一覧</a>
 
-      <!-- Mysqlはintの桁数が限られているためtextで代用 -->
-      <div>
-        法人番号： <input type="text" pattern="[0-9]{13}" name="customer_id" placeholder="1234567890123" required>
-        <a href="https://www.houjin-bangou.nta.go.jp/" target="_blank" rel="noopener noreferrer">
-          【参考】国税庁法人番号公表サイト
-        </a>
-      </div>
       <div>
         会社名： <input type="text" name="customer_name" autocomplete="organization" required>
       </div>
@@ -49,15 +42,6 @@ checkSessionId();
       </>
       <div>
         決算月: <input type="month" name="closing_month" required>
-      </div>
-      <div>
-        青白区分:
-        <label>
-          <input type="radio" name="class_radio" value="blue" required>青色申告
-        </label>
-        <label>
-          <input type="radio" name="class_radio" value="white" required>白色申告
-        </label>
       </div>
       <div>
         <button>submit</button>
