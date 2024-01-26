@@ -1,11 +1,19 @@
 <?php
+session_start();
 include("functions.php");
+
+// echo "<pre>";
+// var_dump($_SESSION);
+// echo "<pre>";
+// exit();
 
 // DB接続
 $pdo = connectToDB($db_name);
 
+$user_table_name = "registered_user_table";
+$user_id = $_SESSION["user_id"];
 // 法人番号と事業所名を表示
-$sql = "SELECT customer_id, customer_name FROM $master_table ORDER BY created_at ASC";
+$sql = "SELECT customer_id, customer_name FROM $user_table_name LEFT OUTER JOIN $master_table ON $user_table_name.customer_id=$master_table.id WHERE $user_table_name.user_id='$user_id'";
 $stmt = $pdo->prepare($sql);
 tryQuery($stmt);
 

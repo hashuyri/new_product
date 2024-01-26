@@ -8,7 +8,7 @@ if (isset($_FILES["fname"])) {
 }
 
 // クライアントの個別フォルダ作成
-$directory = "./data/" . $customer_id;
+$directory = "./data/" . $id;
 if (!file_exists($directory)) {
     mkdir($directory, 0755);
 }
@@ -78,7 +78,7 @@ if (count($get_file_info) > 0) {
         $pdo = connectToDB($db_name);
 
         // テーブルの作成
-        $table_name = "T" . $customer_id;
+        $table_name = "T" . $id;
         $pdo->query("create table if not exists $table_name
                     ($header[0] INT(11), $header[1] DATE, $header[2] VARCHAR(128),
                     $header[3] VARCHAR(128), $header[4] INT(20), $header[5] VARCHAR(128),

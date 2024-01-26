@@ -37,8 +37,9 @@ if ($result === false) {
 }
 
 // 既に企業のユーザーテーブルに追加済みでないかどうか確認
-$user_table_name = "UT" . $_SESSION["customer_id"];
-$sql = "SELECT user_id FROM $user_table_name WHERE user_id=:user_id";
+$user_table_name = "registered_user_table";
+$customer_id = $_SESSION["customer_id"];
+$sql = "SELECT user_id FROM $user_table_name WHERE customer_id=$customer_id AND user_id=:user_id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
 // SQL実行（実行に失敗すると `sql error ...` が出力される）
@@ -51,10 +52,10 @@ if ($result !== false) {
     exit();
 }
 // テーブルにデータを書き込み
-$sql = "INSERT INTO $user_table_name (id, user_id,
-    authority, created_at, updated_at, deleted_at)
+$sql = "INSERT INTO $user_table_name (customer_id, user_id,
+    authority)
     VALUES
-    (NULL, '$user_id', '$authority', now(), now(), NULL
+    ('$customer_id', '$user_id', '$authority'
 )";
 $stmt = $pdo->prepare($sql);
 // SQL実行（実行に失敗すると `sql error ...` が出力される）

@@ -31,5 +31,4 @@ if (!$user) {
     $_SESSION["customer_id"] = "";
     $_SESSION["customer_name"] = "";
     header("Location:info_read.php");
-    exit();
 }

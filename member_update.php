@@ -10,7 +10,8 @@ checkSessionId();
 // DB接続
 $pdo = connectToDB($db_name);
 // テーブルにデータを書き込み
-$user_table_name = "UT" . $_SESSION["customer_id"];
+$user_table_name = "registered_user_table";
+$customer_id = $_SESSION["customer_id"];
 
 $authority = $_GET["after_authority"];
 // 追加権限の確認
@@ -19,7 +20,7 @@ if ($authority === "オーナー") {
     $user_id = $_SESSION["user_id"];
     $authority = 1;
     // 更新日の時間も更新
-    $sql = "UPDATE $user_table_name SET authority='$authority',updated_at=now() WHERE user_id='$user_id'";
+    $sql = "UPDATE $user_table_name SET authority='$authority' WHERE customer_id=$customer_id AND user_id='$user_id'";
     $stmt = $pdo->prepare($sql);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
     tryQuery($stmt);
@@ -35,7 +36,7 @@ if ($authority === "オーナー") {
 $user_id = $_GET["user_id"];
 
 // 更新日の時間も更新
-$sql = "UPDATE $user_table_name SET authority='$authority',updated_at=now() WHERE user_id='$user_id'";
+$sql = "UPDATE $user_table_name SET authority='$authority' WHERE customer_id=$customer_id AND user_id='$user_id'";
 $stmt = $pdo->prepare($sql);
 // SQL実行（実行に失敗すると `sql error ...` が出力される）
 tryQuery($stmt);

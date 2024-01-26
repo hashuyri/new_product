@@ -4,7 +4,7 @@ $pdo = connectToDB($db_name);
 
 // info_read.phpから受け取ったcustomer_idを格納
 if (count($_GET) > 0) {
-    $customer_id = $_GET["customer_id"];
+    $id = $_GET["customer_id"];
 
     // ユーザーの権限を取得
     $user_table_name = "registered_user_table";
@@ -21,9 +21,9 @@ if (count($_GET) > 0) {
     // echo "<pre>";
 
     // 企業情報を取得
-    $sql = "SELECT * FROM $master_table WHERE customer_id= :customer_id";
+    $sql = "SELECT * FROM $master_table WHERE id= :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(":customer_id", $customer_id, PDO::PARAM_STR);
+    $stmt->bindValue(":id", $id, PDO::PARAM_STR);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
     tryQuery($stmt);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -47,7 +47,7 @@ if (isset($_POST["customer_name"]) && $_POST["customer_name"] != "") {
     $closing_month = $closing_month->format("Y-m-d");
 
     // テーブルにデータを書き込み
-    $sql = "INSERT INTO $master_table (customer_id, $customer_info_array[0],
+    $sql = "INSERT INTO $master_table (id, $customer_info_array[0],
         $customer_info_array[1], $customer_info_array[2], $customer_info_array[3],
         $customer_info_array[4], $customer_info_array[5], created_at, updated_at)
         VALUES
@@ -63,12 +63,12 @@ if (isset($_POST["customer_name"]) && $_POST["customer_name"] != "") {
     tryQuery($stmt);
 
     // customer_idを取得
-    $sql = "SELECT customer_id FROM $master_table WHERE customer_name= :customer_name ORDER BY created_at DESC LIMIT 1;";
+    $sql = "SELECT id FROM $master_table WHERE customer_name= :customer_name ORDER BY created_at DESC LIMIT 1;";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(":customer_name", $customer_name, PDO::PARAM_STR);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
     tryQuery($stmt);
-    $customer_id = $stmt->fetch(PDO::FETCH_ASSOC);
+    $id = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $user_table_name = "registered_user_table";
     $mail_address = $_SESSION["user_id"];
@@ -76,7 +76,7 @@ if (isset($_POST["customer_name"]) && $_POST["customer_name"] != "") {
     $sql = "INSERT INTO $user_table_name (customer_id, user_id,
         authority)
         VALUES
-        ('$customer_id', '$mail_address', 0
+        ('$id', '$mail_address', 0
     )";
     $stmt = $pdo->prepare($sql);
     // SQL実行（実行に失敗すると `sql error ...` が出力される）
@@ -88,8 +88,8 @@ if (isset($_POST["customer_name"]) && $_POST["customer_name"] != "") {
     }
 }
 
-if ($_SESSION["customer_id"] !== $customer_id) {
-    $_SESSION["customer_id"] = $customer_id;
+if ($_SESSION["customer_id"] !== $id) {
+    $_SESSION["customer_id"] = $id;
 }
 
 // echo "<pre>";

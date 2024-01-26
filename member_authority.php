@@ -3,12 +3,18 @@ session_start();
 include('functions.php');
 checkSessionId();
 
+// echo "<pre>";
+// var_dump($_SESSION);
+// echo "<pre>";
+// exit();
+
 // DB接続
 $pdo = connectToDB($db_name);
 
-$user_table_name = "UT" . $_SESSION["customer_id"];
+$user_table_name = "registered_user_table";
+$customer_id = $_SESSION["customer_id"];
 // 法人番号と事業所名と作成日を表示
-$sql = "SELECT user_id, authority FROM $user_table_name WHERE deleted_at IS NULL ORDER BY authority ASC";
+$sql = "SELECT * FROM $user_table_name WHERE customer_id=$customer_id ORDER BY authority ASC";
 $stmt = $pdo->prepare($sql);
 tryQuery($stmt);
 
@@ -35,9 +41,6 @@ for ($i = 0; $i < count($result); $i++) {
         </td>
     </tr>";
 }
-// echo "<pre>";
-// var_dump($_SESSION);
-// echo "<pre>";
 
 ?>
 
